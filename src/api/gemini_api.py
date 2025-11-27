@@ -1,11 +1,22 @@
+import logging
+import os
+from dotenv import load_dotenv
 from google import genai
 
 
-class GeminiApi:
-    def __init__(self, api_key):
-        genai.configure(api_key=api_key, transport='rest')
-        self.model = genai.GenerativeModel("gemini-2.0-flash")
+load_dotenv()
+GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
-    def create_response(self, prompt):
-        response = self.model.generate_content(prompt)
+logger = logging.getLogger(__name__)
+
+class GeminiApi:
+    def __init__(self):
+        self.client = genai.Client(api_key=GEMINI_API_KEY)
+        self.chat = self.client.chats.create(model=GEMINI_MODEL)
+
+
+    def create_response(self, prompt) -> str:
+        response = self.chat.send_message(prompt)
+        logger.info(f"Gemini response", extra={'response': response.text})
         return response.text
