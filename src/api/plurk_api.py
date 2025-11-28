@@ -95,6 +95,19 @@ class PlurkUtils:
         except Exception as e:
             logger.error(f"Error occurred while responding a post: {e}")
 
+    def post_new_plurk(self, content, qualifier='says'):
+        try:
+            params = {
+                'content': content,
+                'qualifier': qualifier
+            }
+
+            self.plurk.callAPI('/APP/Timeline/plurkAdd', params)
+            logger.info(f"Posted new plurk: {content}")
+
+        except Exception as e:
+            logger.error(f"Error occurred while posting a new plurk: {e}")
+
     def _get_comet_channel(self):
         logger.info("Get Plurk Comet Channel")
         comet = self.plurk.callAPI('/APP/Realtime/getUserChannel')

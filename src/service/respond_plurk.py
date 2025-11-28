@@ -3,11 +3,11 @@ import random
 import time
 
 from src.api.plurk_api import PlurkUtils
-from src.service.response_llm_gen import gen_response
+from src.service.gen_content.llm_gen import gen_response
 
 
 logger = logging.getLogger(__name__)
-
+_msg_delay = 0.5
 
 def respond_post(plurk, msgs):
     for msg in msgs:
@@ -40,7 +40,7 @@ def _process(plurk: PlurkUtils, pid, owner_id, content, qualifier):
             p = _split_response(response)
             for part in p:
                 plurk.respond_post(pid, part, 'thinks')
-                time.sleep(1)
+                time.sleep(_msg_delay)
 
         elif qualifier == 'wants' and '!抱怨' in content:  # 想要
             c = content.replace(' ', '').replace('!抱怨', '')
@@ -48,7 +48,7 @@ def _process(plurk: PlurkUtils, pid, owner_id, content, qualifier):
             p = _split_response(response)
             for part in p:
                 plurk.respond_post(pid, part, 'thinks')
-                time.sleep(1)
+                time.sleep(_msg_delay)
 
         elif qualifier == 'asks' and '!為什麼' in content:  # 問
             c = content.replace(' ', '').replace('!為什麼', '')
@@ -56,34 +56,30 @@ def _process(plurk: PlurkUtils, pid, owner_id, content, qualifier):
             p = _split_response(response)
             for part in p:
                 plurk.respond_post(pid, part, 'feels')
-                time.sleep(1)
+                time.sleep(_msg_delay)
 
         elif qualifier == 'asks' and '!要不要' in content:
             c = content.replace(' ', '').replace('!要不要', '')
             response = gen_response('random_post', c)
             if response:
                 plurk.respond_post(pid, response, 'feels')
-                time.sleep(1)
+                time.sleep(_msg_delay)
         else:
             random_num = random.randint(1, 100)
 
             if '機器人' in content:
                 plurk.respond_post(pid, "蛤", ':')
-                time.sleep(0.5)
             elif '好不好' in content or '要不要' in content:
                 random_yn = random.choice(['好', '不要', '[emo3]', '[emo4]'])
                 plurk.respond_post(pid, random_yn, 'feels')
-                time.sleep(0.5)
             elif '熱水' in content:
                 plurk.respond_post(pid, '多喝熱水', 'says')
-                time.sleep(0.5)
             else:
                 logger.info(f"Got random response")
 
-                if random_num >= 75:
+                if random_num >= 90:
                     random_water = random.choice(['多喝熱水', '多喝冷水', '多喝冷水[emo5]', '多喝熱水[emo5]'])
                     plurk.respond_post(pid, random_water, 'says')
-                time.sleep(0.5)
 
     except Exception as e:
         logger.error(f"Error processing plurk: {e}", exc_info=True)

@@ -4,10 +4,10 @@ import random
 from pathlib import Path
 
 from src.api.gemini_api import GeminiApi
-from src.service.utils.get_random_tarot_info import get_random_tarot_info
+from src.service.gen_content.get_random_tarot_info import get_random_tarot_info
 
 
-PROMPTS_PATH = Path(__file__).resolve().parent.parent.parent / 'prompts.json'
+PROMPTS_PATH = Path(__file__).resolve().parent.parent.parent.parent / 'prompts.json'
 
 with open(PROMPTS_PATH, 'r', encoding='utf-8') as f:
     _prompts_data = json.load(f)

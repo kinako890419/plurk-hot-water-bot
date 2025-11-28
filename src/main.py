@@ -1,10 +1,13 @@
 import logging
 import os
 import time
-from multiprocessing import Process
+import pytz
 
+from multiprocessing import Process
+from apscheduler.schedulers.blocking import BlockingScheduler
 from plurk_oauth import PlurkAPI
 
+from src.service.post.scheduled import post_daily_message
 from src.utils.logging_config import setup_logging
 from src.api.plurk_api import PlurkUtils
 from src.service.respond_plurk import respond_post
@@ -52,12 +55,25 @@ def add_friends():
         except Exception as e:
             logger.error(e)
 
+def daily_post():
+    setup_logging()
+
+    scheduler = BlockingScheduler(timezone=pytz.timezone('Asia/Taipei'))
+
+    scheduler.add_job(post_daily_message, 'cron', hour=18, minute=00, args=[plurk])
+    scheduler.start()
+
 
 if __name__ == "__main__":
 
     f = Process(target=add_friends)
     main = Process(target=run)
+    daily = Process(target=daily_post)
+
     f.start()
     main.start()
+    daily.start()
+
     f.join()
     main.join()
+    daily.join()
