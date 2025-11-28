@@ -7,6 +7,7 @@ from multiprocessing import Process
 from apscheduler.schedulers.blocking import BlockingScheduler
 from plurk_oauth import PlurkAPI
 
+from src.service.post.bot_actions import random_like_post
 from src.service.post.scheduled import post_daily_message
 from src.utils.logging_config import setup_logging
 from src.api.plurk_api import PlurkUtils
@@ -39,18 +40,20 @@ def run():
         try:
             msgs = plurk.get_new_message()
             if msgs:
-                logger.info(f"Got new message", extra={'plurk_messages': msgs})
                 respond_post(plurk=plurk, msgs=msgs)
         except Exception as e:
             logger.error(e)
 
-def add_friends():
+def sub():
     setup_logging()
     logger = logging.getLogger(__name__)
 
     while True:
         try:
             plurk.add_all_as_friends()
+            msgs = plurk.get_new_message()
+            if msgs:
+                random_like_post(plurk=plurk, msgs=msgs)
             time.sleep(1)
         except Exception as e:
             logger.error(e)
@@ -66,14 +69,16 @@ def daily_post():
 
 if __name__ == "__main__":
 
-    f = Process(target=add_friends)
-    main = Process(target=run)
-    daily = Process(target=daily_post)
+    sub_p = Process(target=sub, daemon=True)
+    main = Process(target=run, daemon=True)
+    daily = Process(target=daily_post, daemon=True)
 
-    f.start()
+    sub_p.start()
     main.start()
     daily.start()
 
-    f.join()
-    main.join()
-    daily.join()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Shutting down...")

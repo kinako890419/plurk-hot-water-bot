@@ -75,9 +75,8 @@ def _process(plurk: PlurkUtils, pid, owner_id, content, qualifier):
             elif '熱水' in content:
                 plurk.respond_post(pid, '多喝熱水', 'says')
             else:
-                logger.info(f"Got random response")
-
                 if random_num >= 90:
+                    logger.info(f"Got random response")
                     random_water = random.choice(['多喝熱水', '多喝冷水', '多喝冷水[emo5]', '多喝熱水[emo5]'])
                     plurk.respond_post(pid, random_water, 'says')
 

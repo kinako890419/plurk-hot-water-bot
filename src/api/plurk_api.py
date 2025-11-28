@@ -108,8 +108,16 @@ class PlurkUtils:
         except Exception as e:
             logger.error(f"Error occurred while posting a new plurk: {e}")
 
+    def like_plurk(self, plurk_id_list: list[int]):
+        try:
+            params = {'ids': json.dumps(plurk_id_list)}
+            self.plurk.callAPI('/APP/Timeline/favoritePlurks', params)
+            logger.info(f"Liked plurk ID: {plurk_id_list}")
+
+        except Exception as e:
+            logger.error(f"Error occurred while liking plurk. {e}")
+
     def _get_comet_channel(self):
-        logger.info("Get Plurk Comet Channel")
         comet = self.plurk.callAPI('/APP/Realtime/getUserChannel')
         comet_channel = comet.get('comet_server') + "&new_offset=%d"
 
