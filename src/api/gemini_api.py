@@ -28,5 +28,5 @@ class GeminiApi:
 
     def create_response(self, prompt) -> str:
         response = self.chat.send_message(prompt)
-        logger.info(f"Gemini response", extra={'response': response.text})
+        logger.info(f"Gemini API response", extra={'response': response.text, 'prompt': prompt})
         return response.text

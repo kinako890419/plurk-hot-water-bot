@@ -1,29 +1,42 @@
 import logging.config
 
 
-LOGGING_CONFIG = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'default': {
-            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            'datefmt': '%Y-%m-%d %H:%M:%S'
+def get_logging_config():
+
+    json_formatter = {
+        '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
+        'format': '%(asctime)s %(name)s %(levelname)s %(message)s',
+        'timestamp': True,
+        'rename_fields': {
+            'asctime': '@timestamp',
+            'name': 'logger',
+            'levelname': 'level',
+            'message': 'message'
         },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'level': 'INFO',
-            'formatter': 'default',
-            'stream': 'ext://sys.stdout'
-        },
-    },
-    'root': {
-        'level': 'INFO',
-        'handlers': ['console']
+        'json_ensure_ascii': False
     }
-}
+
+    return {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'default': json_formatter,
+        },
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'level': 'INFO',
+                'formatter': 'default',
+                'stream': 'ext://sys.stdout'
+            },
+        },
+        'root': {
+            'level': 'INFO',
+            'handlers': ['console']
+        }
+    }
 
 
 def setup_logging():
-    logging.config.dictConfig(LOGGING_CONFIG)
+    config = get_logging_config()
+    logging.config.dictConfig(config)

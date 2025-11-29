@@ -38,15 +38,14 @@ def gen_response(style: str, content: str) -> str | None:
 
 
 def _gen_tarot_resp(client: GeminiApi, content: str) -> str:
-    logger.info(f"Generating tarot response.")
-
     result, _ = get_random_tarot_info()
+    logger.info(f"Generating tarot response with cards.", extra={'cards': result, 'resptype': 'llm.tarot'})
     prompt = TAROT_PROMPT.format(card_result=result, cleaned_content=content)
     return client.create_response(prompt)
 
 
 def _gen_bad_ans_resp(client: GeminiApi, content: str) -> str:
-    logger.info(f"Generating bad ans response.")
+    logger.info(f"Generating bad ans response.", extra={'resptype': 'llm.bad_answer'})
 
     bad_ans = random.choice(BAD_ADVICES)
     prompt = BAD_ANS_PROMPT.format(cleaned_content=content, bad_ans=bad_ans)
@@ -54,14 +53,14 @@ def _gen_bad_ans_resp(client: GeminiApi, content: str) -> str:
 
 
 def _gen_rap(client: GeminiApi, content: str) -> str:
-    logger.info(f"Generating rap response.")
+    logger.info(f"Generating rap response.", extra={'resptype': 'llm.rap'})
 
     prompt = RAP_PROMPT.format(cleaned_content=content)
     return client.create_response(prompt)
 
 
 def _gen_random_post_resp(client: GeminiApi, content: str) -> str:
-    logger.info(f"Generating random post response.")
+    logger.info(f"Generating random post response.", extra={'resptype': 'llm.random_post'})
 
     choice = random.choice(YES_NO)
     prompt = DECISION_PROMPT.format(cleaned_content=content, choice=choice)

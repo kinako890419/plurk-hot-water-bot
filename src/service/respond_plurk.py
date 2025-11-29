@@ -68,16 +68,20 @@ def _process(plurk: PlurkUtils, pid, owner_id, content, qualifier):
             random_num = random.randint(1, 100)
 
             if '機器人' in content:
+                logger.info(f"Responding to '機器人' keyword", extra={'plurk_id': pid, 'plurk_msg': content, 'resptype': 'keyword'})
                 plurk.respond_post(pid, "蛤", ':')
             elif '好不好' in content or '要不要' in content:
+                logger.info(f"Responding to '好不好' or '要不要' keyword", extra={'plurk_id': pid, 'plurk_msg': content, 'resptype': 'keyword'})
                 random_yn = random.choice(['好', '不要', '[emo3]', '[emo4]'])
                 plurk.respond_post(pid, random_yn, 'feels')
             elif '熱水' in content:
+                logger.info(f"Responding to '熱水' keyword", extra={'plurk_id': pid, 'plurk_msg': content, 'resptype': 'keyword'})
                 plurk.respond_post(pid, '多喝熱水', 'says')
             else:
                 if random_num >= 90:
-                    logger.info(f"Got random response")
                     random_water = random.choice(['多喝熱水', '多喝冷水', '多喝冷水[emo5]', '多喝熱水[emo5]'])
+                    logger.info(f"Got random response", extra={'plurk_id': pid, 'plurk_msg': content, 'resptype': 'random', 'random_value': random_water})
+
                     plurk.respond_post(pid, random_water, 'says')
 
     except Exception as e:
