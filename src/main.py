@@ -1,18 +1,25 @@
+import sys
+from pathlib import Path
+
+from apscheduler.schedulers.background import BackgroundScheduler
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import logging
 import os
 import time
-import pytz
 import threading
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from plurk_oauth import PlurkAPI
 
-from src.service.post.bot_actions import random_like_post
-from src.service.post.scheduled import post_daily_message
+from src.service.post.scheduled import BotScheduledTasks
 from src.utils.logging_config import setup_logging
 from src.api.plurk_api import PlurkUtils
 from src.service.respond_plurk import respond_post
 
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 PLURK_CONSUMER_KEY=os.getenv('PLURK_CONSUMER_KEY')
 PLURK_CONSUMER_SECRET=os.getenv('PLURK_CONSUMER_SECRET')
@@ -42,35 +49,14 @@ def run():
             logger.error(f"Error while bot run: {e}")
 
 
-def add_friends():
-    try:
-        plurk.add_all_as_friends()
-    except Exception as e:
-        logger.error(f"Error while adding friends: {e}")
-
-
-def like_random_posts():
-    try:
-        msgs = plurk.get_new_message()
-        if msgs:
-            random_like_post(plurk=plurk, msgs=msgs)
-    except Exception as e:
-        logger.error(f"Error while liking posts: {e}")
-
-
 if __name__ == "__main__":
-    setup_logging()
-    logger = logging.getLogger(__name__)
 
-    bot = threading.Thread(target=run, daemon=True)
-    bot.start()
+    bot_thread = threading.Thread(target=run, daemon=True)
+    bot_thread.start()
 
-    scheduler = BackgroundScheduler(timezone=pytz.timezone('Asia/Taipei'))
-
-    scheduler.add_job(add_friends, 'interval', seconds=30, id='add_friends')
-    scheduler.add_job(like_random_posts, 'interval', minutes=5, id='like_random_posts')
-    scheduler.add_job(post_daily_message, 'cron', hour=18, minute=0, args=[plurk], id='daily_post')
-
+    scheduler = BackgroundScheduler()
+    bot_tasks = BotScheduledTasks(plurk)
+    bot_tasks.schedule_jobs(scheduler)
     scheduler.start()
 
     try:
@@ -79,3 +65,4 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, SystemExit):
         logger.info("Received exit signal, shutting down...")
         scheduler.shutdown()
+        logger.info("Scheduler shut down successfully.")

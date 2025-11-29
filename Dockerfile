@@ -10,4 +10,4 @@ COPY ./src ./src
 COPY ./prompts.json ./prompts.json
 COPY ./tarot_zhtw.json ./tarot_zhtw.json
 
-CMD ["python", "-m", "src.main"]
+CMD ["python", "src/main.py"]
