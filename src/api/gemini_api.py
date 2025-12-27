@@ -27,6 +27,11 @@ class GeminiApi:
 
 
     def create_response(self, prompt) -> str:
-        response = self.chat.send_message(prompt)
-        logger.info(f"Gemini API response", extra={'response': response.text, 'prompt': prompt})
-        return response.text
+        try:
+            response = self.chat.send_message(prompt)
+            logger.info(f"Gemini API response", extra={'response': response.text, 'prompt': prompt})
+            return response.text
+
+        except Exception as e:
+            logger.error(f"Error in Gemini API: {e}", extra={'prompt': prompt})
+            return ""

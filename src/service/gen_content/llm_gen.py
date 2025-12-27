@@ -26,13 +26,17 @@ def gen_response(style: str, content: str) -> str | None:
     client = GeminiApi()
     match style:
         case 'tarot':
-            return _gen_tarot_resp(client, content)
+            resp = _gen_tarot_resp(client, content)
+            return resp if resp else None
         case 'bad_answer':
-            return _gen_bad_ans_resp(client, content)
+            resp = _gen_bad_ans_resp(client, content)
+            return resp if resp else None
         case 'rap':
-            return _gen_rap(client, content)
+            resp = _gen_rap(client, content)
+            return resp if resp else None
         case 'random_post':
-            return _gen_random_post_resp(client, content)
+            resp = _gen_random_post_resp(client, content)
+            return resp if resp else None
         case _:
             return None
 

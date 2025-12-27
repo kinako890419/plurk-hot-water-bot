@@ -37,26 +37,29 @@ def _process(plurk: PlurkUtils, pid, owner_id, content, qualifier):
         if (qualifier == 'hopes' or qualifier == 'wishes') and '!抽' in content:  # 希望
             c = content.replace(' ', '').replace('!抽', '')
             response = gen_response('tarot', c)
-            p = _split_response(response)
-            for part in p:
-                plurk.respond_post(pid, part, 'thinks')
-                time.sleep(_msg_delay)
+            if response:
+                p = _split_response(response)
+                for part in p:
+                    plurk.respond_post(pid, part, 'thinks')
+                    time.sleep(_msg_delay)
 
         elif qualifier == 'wants' and '!抱怨' in content:  # 想要
             c = content.replace(' ', '').replace('!抱怨', '')
             response = gen_response('bad_answer', c)
-            p = _split_response(response)
-            for part in p:
-                plurk.respond_post(pid, part, 'thinks')
-                time.sleep(_msg_delay)
+            if response:
+                p = _split_response(response)
+                for part in p:
+                    plurk.respond_post(pid, part, 'thinks')
+                    time.sleep(_msg_delay)
 
         elif qualifier == 'asks' and '!為什麼' in content:  # 問
             c = content.replace(' ', '').replace('!為什麼', '')
             response = gen_response('rap', c)
-            p = _split_response(response)
-            for part in p:
-                plurk.respond_post(pid, part, 'feels')
-                time.sleep(_msg_delay)
+            if response:
+                p = _split_response(response)
+                for part in p:
+                    plurk.respond_post(pid, part, 'feels')
+                    time.sleep(_msg_delay)
 
         elif qualifier == 'asks' and '!要不要' in content:
             c = content.replace(' ', '').replace('!要不要', '')
